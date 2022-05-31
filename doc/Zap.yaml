@@ -1,0 +1,30 @@
+openapi: 3.1.0
+info:
+  title: ZapApi
+  version: '1.0'
+  summary: Zap API
+  description: API to get data from ZapImoveis
+  contact:
+    name: Vitor Mattos
+    url: 'https://github.com/vitormattos'
+servers:
+  - description: local
+    url: 'http://localhost/api'
+paths:
+  '/zap-search':
+    get:
+      summary: Retrieve data
+      tags:
+        - crud
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Success
+      operationId: zap-get
+      description: Retrieve data
+tags:
+  - name: zap

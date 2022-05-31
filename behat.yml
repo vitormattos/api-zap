@@ -1,0 +1,6 @@
+default:
+  extensions:
+    PhpBuiltin\Server:
+      verbose: false
+      rootDir: /var/www/public
+      host: localhost

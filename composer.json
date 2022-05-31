@@ -1,0 +1,39 @@
+{
+    "require": {
+        "slim/slim": "^4.10",
+        "slim/psr7": "^1.5",
+        "robmorgan/phinx": "^0.12.10",
+        "doctrine/dbal": "^3.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Api\\": "src",
+            "Tests\\": "tests"
+        }
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.6",
+        "vimeo/psalm": "^4.23",
+        "phpstan/phpstan": "^1.6",
+        "phpunit/phpunit": "^9.5",
+        "behat/behat": "^3.10",
+        "libresign/behat-builtin-extension": "^0.4.1",
+        "guzzlehttp/guzzle": "^7.4",
+        "byjg/swagger-test": "^3.1"
+    },
+    "scripts" : {
+        "phpcs" : "phpcs",
+        "phpcbf" : "phpcbf",
+        "psalm" : "psalm",
+        "phpstan" : "phpstan analyse src --level 5",
+        "phpunit": "phpunit --color tests",
+        "behat": "behat",
+        "test" : [
+            "@phpcs",
+            "@psalm",
+            "@phpstan",
+            "@phpunit",
+            "@behat"
+        ]
+    }
+}

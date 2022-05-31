@@ -1,0 +1,7 @@
+/.vscode/
+/volumes/
+/vendor/
+/storage/
+/.cache/
+/.bash_history
+/.env
