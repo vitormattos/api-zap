@@ -14,7 +14,11 @@ docker compose exec api vendor/bin/phinx migrage
 /api/zap-search
 
 ### Query string
-Do a query string in ZapImoveis and use the same as a query string
+* Open developer tools of your browzer
+* Do a search in ZapImoveis.
+* Filter on Network tap by `/listing`
+* Identify the last `GET` request
+* Use the same as a query string
 
 ## Analize collected data
 ```sql
