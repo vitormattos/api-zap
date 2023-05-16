@@ -24,18 +24,13 @@ class ZapService
                 'portal' => 'ZAP',
                 'bedrooms' => null,
                 'sort' => 'pricingInfos.price ASC sortFilter:pricingInfos.businessType=\'RENTAL\'',
-                'usableAreasMin' => 70,
-                'priceMax' => 5000,
+                'usableAreasMin' => 100,
                 'categoryPage' => 'RESULT',
                 'addressCountry' => '',
                 'addressState' => 'Rio de Janeiro',
                 'addressCity' => 'Rio de Janeiro',
-                'addressZone' => 'Zona Central',
-                'addressNeighborhood' => 'Centro',
                 'addressStreet' => '',
                 'addressAccounts' => '',
-                'addressType' => 'neighborhood',
-                'levels' => 'NEIGHBORHOOD',
                 'size' => $this->pageSize,
                 'includeFields' => $this->getIncludeFields(),
             ],
@@ -55,7 +50,10 @@ class ZapService
         ];
 
         $client = new Client();
-        $response = $client->get('https://glue-api.zapimoveis.com.br/v2/listings?' . http_build_query($query), $options);
+        $response = $client->get(
+            'https://glue-api.zapimoveis.com.br/v2/listings?' . http_build_query($query),
+            $options
+        );
         $content = $response->getBody()->getContents();
         $decoded = json_decode($content, true);
         $this->zapMapper->saveData($decoded['search']['result']['listings']);

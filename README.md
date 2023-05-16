@@ -18,7 +18,7 @@ docker compose exec api vendor/bin/phinx migrage
 * Do a search in ZapImoveis.
 * Filter on Network tap by `/listing`
 * Identify the last `GET` request
-* Use the same as a query string
+* Use the same as a query string in endpoint `GET /zap-search`
 
 ## Analize collected data
 ```sql
@@ -39,7 +39,7 @@ select u.zap_id,
   join prices p on p.zap_id = u.zap_id
   join unit_type ut on ut.zap_id = u.zap_id
   join address a on a.zap_id = u.zap_id
- where business_type in ('RENTAL')
+ where p.business_type in ('RENTAL')
    and u.zap_id not in ('2559137018')
    and ut.type not in ('OFFICE', 'COMMERCIAL_BUILDING', 'COMMERCIAL_PROPERTY', 'BUSINESS', 'PARKING_SPACE', 'SHED_DEPOSIT_WAREHOUSE')
    and a.street not in ('Rua dos Bobos')

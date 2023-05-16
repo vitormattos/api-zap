@@ -15,15 +15,16 @@ class ZapMapper
     public function __construct()
     {
         $this->conn = DriverManager::getConnection([
-            'dbname' => getenv('DB_NAME'),
-            'user' => getenv('DB_USER'),
-            'password' => getenv('DB_PASSWORD'),
-            'host' => getenv('DB_HOST'),
-            'driver' => getenv('DP_DRIVER')
+            'dbname' => (string) getenv('DB_NAME'),
+            'user' => (string) getenv('DB_USER'),
+            'password' => (string) getenv('DB_PASSWORD'),
+            'host' => (string) getenv('DB_HOST'),
+            'driver' => (string) getenv('DP_DRIVER'),
         ]);
     }
 
-    public function saveData(array $data): void {
+    public function saveData(array $data): void
+    {
         foreach ($data as $row) {
             $this->insertItem($row['listing']);
         }
@@ -99,7 +100,7 @@ class ZapMapper
         $data = [
             'zap_id' => $qb->createNamedParameter($zapId)
         ];
-        foreach($fields as $col => $original) {
+        foreach ($fields as $col => $original) {
             if (array_key_exists($original, $address) && !empty($address[$original])) {
                 $data[$col] = $qb->createNamedParameter($address[$original]);
             }
@@ -119,7 +120,10 @@ class ZapMapper
                 'business_type' => $qb->createNamedParameter($price['businessType']),
             ];
             if (array_key_exists('monthlyCondoFee', $price)) {
-                $data['monthly_condo_fee'] = $qb->createNamedParameter($price['monthlyCondoFee'], ParameterType::INTEGER);
+                $data['monthly_condo_fee'] = $qb->createNamedParameter(
+                    $price['monthlyCondoFee'],
+                    ParameterType::INTEGER
+                );
             }
             if (array_key_exists('yearlyIptu', $price)) {
                 $data['yearly_iptu'] = $qb->createNamedParameter($price['yearlyIptu'], ParameterType::INTEGER);
@@ -130,102 +134,15 @@ class ZapMapper
                 }
                 $data['warranties'] = $qb->createNamedParameter(json_encode($price['rentalInfo']['warranties']));
                 if (array_key_exists('monthlyRentalTotalPrice', $price['rentalInfo'])) {
-                    $data['monthly_rental_total_price'] = $qb->createNamedParameter($price['rentalInfo']['monthlyRentalTotalPrice'], ParameterType::INTEGER);
+                    $data['monthly_rental_total_price'] = $qb->createNamedParameter(
+                        $price['rentalInfo']['monthlyRentalTotalPrice'],
+                        ParameterType::INTEGER
+                    );
                 }
             }
             $qb->insert('prices')
                 ->values($data)
                 ->executeStatement();
         }
-    }
-
-    private function getIncludeFields(): string
-    {
-        $array = [
-            'search' => [
-                'result' => [
-                    'listings' => [
-                        'listing' => [
-                            'id',
-                            'acceptExchange',
-                            'address',
-                            'advertiserContact',
-                            'advertiserId',
-                            'amenities',
-                            'bathrooms',
-                            'bedrooms',
-                            'buildings',
-                            'capacityLimit',
-                            'constructionStatus',
-                            'createdAt',
-                            'description',
-                            'displayAddressType',
-                            'externalId',
-                            'floors',
-                            'legacyId',
-                            'listingType',
-                            'listingsCount',
-                            'nonActivationReason',
-                            'parkingSpaces',
-                            'portal',
-                            'priceSuggestion',
-                            'pricingInfos',
-                            'propertyType',
-                            'providerId',
-                            'publicationType',
-                            'resale',
-                            'showPrice',
-                            'sourceId',
-                            'stamps',
-                            'status',
-                            'suites',
-                            'title',
-                            'totalAreas',
-                            'unitFloor',
-                            'unitSubTypes',
-                            'unitTypes',
-                            'unitsOnTheFloor',
-                            'updatedAt',
-                            'usableAreas',
-                            'usageTypes',
-                            'whatsappNumber',
-                        ],
-                        'account' => [
-                            'id',
-                            'name',
-                            'logoUrl',
-                            'licenseNumber',
-                            'showAddress',
-                            'legacyVivarealId',
-                            'legacyZapId',
-                            'minisite'
-                        ],
-                        'medias',
-                    ],
-                ],
-                'totalCount'
-            ],
-        ];
-        $string = array_reduce([$array], [$this, 'reduce',]);
-        return $string;
-    }
-
-    private function reduce($carry, $item): string
-    {
-        if (is_string($item)) {
-            if ($carry) {
-                return $carry . ',' . $item;
-            }
-            return $item;
-        }
-        if (is_array($item)) {
-            foreach ($item as $key => $value) {
-                if (is_array($value)) {
-                    $item[$key] = $key . '(' . array_reduce([$value], [$this, 'reduce']) . ')';
-                }
-            }
-        }
-        $carry .= implode(',', $item);
-        return $carry;
     }
 }
