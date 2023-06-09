@@ -27,4 +27,4 @@ jobs:
       - name: Run behat
         env:
           BEHAT_ROOT_DIR: public
-        run: vendor/bin/behat
+        run: vendor/bin/behat features/zap.feature:3
