@@ -52,7 +52,10 @@ class ZapService
         ];
 
         $client = new Client();
-        $response = $client->get('https://glue-api.zapimoveis.com.br/v2/listings?' . http_build_query($query), $options);
+        $response = $client->get(
+            'https://glue-api.zapimoveis.com.br/v2/listings?' . urldecode(http_build_query($query)),
+            $options
+        );
         $content = $response->getBody()->getContents();
         $decoded = json_decode($content, true);
         $this->zapMapper->saveData($decoded['search']['result']['listings']);
