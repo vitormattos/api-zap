@@ -23,7 +23,8 @@ class ZapMapper
         ]);
     }
 
-    public function saveData(array $data): void {
+    public function saveData(array $data): void
+    {
         foreach ($data as $row) {
             $this->insertItem($row['listing']);
         }
@@ -99,7 +100,7 @@ class ZapMapper
         $data = [
             'zap_id' => $qb->createNamedParameter($zapId)
         ];
-        foreach($fields as $col => $original) {
+        foreach ($fields as $col => $original) {
             if (array_key_exists($original, $address) && !empty($address[$original])) {
                 $data[$col] = $qb->createNamedParameter($address[$original]);
             }
