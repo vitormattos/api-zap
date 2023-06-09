@@ -19,7 +19,10 @@ class ZapController
 
     public function search(Request $request, Response $response): Response
     {
-        $this->zapService->getZap($request->getQueryParams());
+        $this->zapService->getZap(array_merge(
+            $request->getQueryParams(),
+            $request->getParsedBody()
+        ));
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withStatus(200);
