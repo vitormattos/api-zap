@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 
 class ZapService
 {
-    private int $pageSize = 30;
+    private int $pageSize = 100;
     private ZapMapper $zapMapper;
 
     public function __construct()
