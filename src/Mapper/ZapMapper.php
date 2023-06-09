@@ -124,7 +124,10 @@ class ZapMapper
                 'business_type' => $qb->createNamedParameter($price['businessType']),
             ];
             if (array_key_exists('monthlyCondoFee', $price)) {
-                $data['monthly_condo_fee'] = $qb->createNamedParameter($price['monthlyCondoFee'], ParameterType::INTEGER);
+                $data['monthly_condo_fee'] = $qb->createNamedParameter(
+                    $price['monthlyCondoFee'],
+                    ParameterType::INTEGER
+                );
             }
             if (array_key_exists('yearlyIptu', $price)) {
                 $data['yearly_iptu'] = $qb->createNamedParameter($price['yearlyIptu'], ParameterType::INTEGER);
@@ -135,7 +138,10 @@ class ZapMapper
                 }
                 $data['warranties'] = $qb->createNamedParameter(json_encode($price['rentalInfo']['warranties']));
                 if (array_key_exists('monthlyRentalTotalPrice', $price['rentalInfo'])) {
-                    $data['monthly_rental_total_price'] = $qb->createNamedParameter($price['rentalInfo']['monthlyRentalTotalPrice'], ParameterType::INTEGER);
+                    $data['monthly_rental_total_price'] = $qb->createNamedParameter(
+                        $price['rentalInfo']['monthlyRentalTotalPrice'],
+                        ParameterType::INTEGER
+                    );
                 }
             }
             $qb->insert('prices')
