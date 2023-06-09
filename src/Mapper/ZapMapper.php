@@ -104,6 +104,10 @@ class ZapMapper
                 $data[$col] = $qb->createNamedParameter($address[$original]);
             }
         }
+        if (!empty($address['point']) && !empty($address['point']['lat'] && !empty($address['point']['lon']))) {
+            $data['lat'] = $address['point']['lat'];
+            $data['lon'] = $address['point']['lon'];
+        }
         $qb->insert('address')
             ->values($data)
             ->executeStatement();
