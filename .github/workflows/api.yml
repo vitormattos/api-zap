@@ -46,4 +46,5 @@ jobs:
           DB_PORT: 5432
         run: |
           vendor/bin/phinx migrate
+          export BEHAT_VERBOSE="$RUNNER_DEBUG"
           vendor/bin/behat features/zap.feature:3
