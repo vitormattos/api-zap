@@ -37,7 +37,6 @@ class ZapService
     {
         $query = array_merge(
             [
-                'business' => 'RENTAL',
                 'categoryPage' => 'RESULT',
                 'developmentsSize' => 3,
                 'includeFields' => $this->getIncludeFields(),
