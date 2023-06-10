@@ -115,7 +115,7 @@ class ZapMapper
             'state_acronym' => 'stateAcronym',
             'complement' => 'complement',
             'precision' => 'precision',
-            'zip_code' => 'zipCde',
+            'zip_code' => 'zipCode',
         ];
         $data = [
             'zap_id' => $qb->createNamedParameter($zapId)
