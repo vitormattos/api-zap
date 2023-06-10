@@ -4,18 +4,36 @@ namespace Api\Service;
 
 use Api\Mapper\ZapMapper;
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 
 class ZapService
 {
     private int $pageSize = 100;
     private ZapMapper $zapMapper;
+    private array $options = [
+        'headers' => [
+            'X-Domain' => 'www.zapimoveis.com.br',
+        ],
+        'stream' => true,
+        'version' => '1.0',
+    ];
 
     public function __construct()
     {
         $this->zapMapper = new ZapMapper();
     }
 
-    public function getZap(array $query, int $page = 1, int $from = 0): void
+    public function getZap(array $query, int $page = 1, int $from = 0, bool $syncronous = true): void
+    {
+        $client = new Client();
+        if ($syncronous) {
+            $this->getSync($query, $page, $from);
+        } else {
+            $this->getAssync($query, $page, $from);
+        }
+    }
+
+    private function getUrl(array $query, $from, $page): string
     {
         $query = array_merge(
             [
@@ -35,26 +53,41 @@ class ZapService
                 'page' => $page,
             ]
         );
-
-        $options = [
-            'headers' => [
-                'X-Domain' => 'www.zapimoveis.com.br',
-            ],
-            'stream' => true,
-            'version' => '1.0',
-        ];
-
-        $client = new Client();
         $url = 'https://glue-api.zapimoveis.com.br/v2/listings?' . urldecode(http_build_query($query));
-        $response = $client->get($url, $options);
+        return $url;
+    }
+
+    private function getSync(array $query, int $page, int $from): void
+    {
+        $client = new Client();
+        $url = $this->getUrl($query, $from, $page);
+        $response = $client->get($url, $this->options);
+        $this->processResponse($response, $query, $page, $from);
+    }
+
+    private function getAssync(array $query, int $page, int $from): void
+    {
+        $client = new Client();
+        $url = $this->getUrl($query, $from, $page);
+        $promisse = $client->getAsync($url, $this->options);
+        $promisse->then(
+            function (ResponseInterface $response) use ($query, $page, $from) {
+                $this->processResponse($response, $query, $page, $from);
+            }
+        );
+    }
+
+    private function processResponse(ResponseInterface $response, array $query, int $page, int $from): void
+    {
         $content = $response->getBody()->getContents();
         $decoded = json_decode($content, true);
-        $this->zapMapper->saveData($decoded['search']['result']['listings']);
-        if ($page * $query['page'] < $decoded['search']['totalCount']) {
+        $total = $decoded['search']['totalCount'];
+        if ($page * $query['page'] < $total) {
             $page++;
             $from += $this->pageSize;
-            $this->getZap($query, $page, $from);
+            $this->getZap($query, $page, $from, false);
         }
+        $this->zapMapper->saveData($decoded['search']['result']['listings']);
     }
 
     private function getIncludeFields(): string
