@@ -14,6 +14,10 @@ final class Unit extends AbstractMigration
             ->addColumn('bedrooms', 'integer', ['null' => true])
             ->addColumn('bathrooms', 'integer', ['null' => true])
             ->addColumn('total_areas', 'integer', ['null' => true])
+            ->addColumn('good', 'integer', ['null' => true])
+            ->addColumn('ignore', 'integer', ['null' => true])
+            ->addColumn('created_at', 'datetime')
+            ->addColumn('updated_at', 'datetime', ['null' => true])
             ->create();
     }
 }

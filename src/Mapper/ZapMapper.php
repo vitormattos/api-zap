@@ -7,6 +7,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Types\Types;
 
 class ZapMapper
 {
@@ -35,6 +36,15 @@ class ZapMapper
         return new QueryBuilder($this->conn);
     }
 
+    private function stringToDateImmutable(string $date): \DateTimeImmutable
+    {
+        $date = preg_replace('/\.\d+Z$/', '', $date);
+        $date = preg_replace('/Z$/', '', $date);
+
+        $return = \DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s', $date);
+        return $return;
+    }
+
     private function insertItem(array $row): void
     {
         $qb = $this->getQueryBuilder();
@@ -42,7 +52,17 @@ class ZapMapper
             'data' => $qb->createNamedParameter(json_encode($row)),
             'zap_id' => $qb->createNamedParameter($row['id']),
             'title' => $qb->createNamedParameter($row['title']),
+            'created_at' => $qb->createNamedParameter(
+                $this->stringToDateImmutable($row['createdAt']),
+                Types::DATE_IMMUTABLE
+            ),
         ];
+        if (!empty($row['updatedAt'])) {
+            $data['updated_at'] = $qb->createNamedParameter(
+                $this->stringToDateImmutable($row['updatedAt']),
+                Types::DATE_IMMUTABLE
+            );
+        }
         if (array_key_exists(0, $row['bedrooms'])) {
             $data['bedrooms'] = $qb->createNamedParameter($row['bedrooms'][0], ParameterType::INTEGER);
         }
