@@ -19,21 +19,14 @@ class ZapService
     {
         $query = array_merge(
             [
-                'bedrooms' => null,
                 'business' => 'RENTAL',
                 'categoryPage' => 'RESULT',
                 'developmentsSize' => 3,
                 'includeFields' => $this->getIncludeFields(),
                 'levels' => 'CITY',
-                'listingType' => 'USED',
-                'portal' => 'ZAP',
-                'ref' => '',
                 'size' => $this->pageSize,
-                'sort' => 'pricingInfos.price ASC sortFilter:pricingInfos.businessType=\'RENTAL\'',
+                'sort' => 'pricingInfos.price ASC',
                 'superPremiumSize' => 0,
-                'unitSubTypes' => '',
-                'unitTypesV3' => '',
-                'usableAreasMin' => 50,
                 'usageTypes' => 'RESIDENTIAL',
             ],
             $query,
