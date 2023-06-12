@@ -13,6 +13,7 @@ class ZapService
     private array $options = [
         'headers' => [
             'X-Domain' => 'www.zapimoveis.com.br',
+            'User-Agent' => date('Y-m-d H:i:s'), // To prevent 429 Too Many Requests
         ],
         'stream' => true,
         'version' => '1.0',
