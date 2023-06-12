@@ -26,7 +26,6 @@ class ZapService
 
     public function getZap(array $query, int $page = 1, int $from = 0, bool $syncronous = true): void
     {
-        $client = new Client();
         if ($syncronous) {
             $this->getSync($query, $page, $from);
         } else {
