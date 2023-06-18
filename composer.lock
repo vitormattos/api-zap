@@ -3645,16 +3645,16 @@
         },
         {
             "name": "libresign/behat-builtin-extension",
-            "version": "v0.5.2",
+            "version": "v0.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LibreSign/behat-builtin-extension.git",
-                "reference": "65761b250c0a4f6e56168c8274903777ef0a42b5"
+                "reference": "50354dacade1218b457aaa24d070c60cac06ff6e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LibreSign/behat-builtin-extension/zipball/65761b250c0a4f6e56168c8274903777ef0a42b5",
-                "reference": "65761b250c0a4f6e56168c8274903777ef0a42b5",
+                "url": "https://api.github.com/repos/LibreSign/behat-builtin-extension/zipball/50354dacade1218b457aaa24d070c60cac06ff6e",
+                "reference": "50354dacade1218b457aaa24d070c60cac06ff6e",
                 "shasum": ""
             },
             "require": {
@@ -3685,9 +3685,9 @@
             "description": "Behat extension to run php built-in web server",
             "support": {
                 "issues": "https://github.com/LibreSign/behat-builtin-extension/issues",
-                "source": "https://github.com/LibreSign/behat-builtin-extension/tree/v0.5.2"
+                "source": "https://github.com/LibreSign/behat-builtin-extension/tree/v0.5.3"
             },
-            "time": "2023-06-06T19:23:31+00:00"
+            "time": "2023-06-18T21:14:30+00:00"
         },
         {
             "name": "myclabs/deep-copy",
