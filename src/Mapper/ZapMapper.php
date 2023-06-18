@@ -20,7 +20,7 @@ class ZapMapper
             'user' => getenv('DB_USER'),
             'password' => getenv('DB_PASSWORD'),
             'host' => getenv('DB_HOST'),
-            'driver' => getenv('DP_DRIVER')
+            'driver' => getenv('DB_DRIVER')
         ]);
     }
 
