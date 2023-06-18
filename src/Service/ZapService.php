@@ -39,9 +39,7 @@ class ZapService
         $query = array_merge(
             [
                 'categoryPage' => 'RESULT',
-                'developmentsSize' => 3,
                 'includeFields' => $this->getIncludeFields(),
-                'levels' => 'CITY',
                 'size' => $this->pageSize,
                 'sort' => 'pricingInfos.price ASC',
                 'superPremiumSize' => 0,
