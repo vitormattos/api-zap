@@ -13,5 +13,3 @@ Feature: Zap API
       | business | RENTAL |
       | addressCity | Rio de Janeiro |
       | addressState | Rio de Janeiro |
-      | addressStreet | |
-      | addressType | city |
