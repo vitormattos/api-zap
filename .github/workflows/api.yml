@@ -39,6 +39,7 @@ jobs:
         env:
           BEHAT_ROOT_DIR: public
           DB_ADAPTER: pgsql
+          DB_DRIVER: pdo_pgsql
           DB_HOST: 127.0.0.1
           DB_NAME: zapimoveis
           DB_USER: root
