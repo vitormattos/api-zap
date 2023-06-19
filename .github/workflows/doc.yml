@@ -31,6 +31,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           coverage: ${{ matrix.coverage }}
+          extensions: pdo_pgsql
 
       - name: Install dependencies
         run: composer i
