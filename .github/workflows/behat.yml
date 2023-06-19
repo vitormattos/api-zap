@@ -1,4 +1,4 @@
-name: api
+name: Behat
 on: pull_request
 
 jobs:

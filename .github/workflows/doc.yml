@@ -1,4 +1,4 @@
-name: Test doc
+name: Swagger
 on: pull_request
 
 jobs:
