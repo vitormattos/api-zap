@@ -40,6 +40,13 @@ jobs:
       - name: Run phpunit
         env:
           XDEBUG_MODE: ${{ matrix.xdebug_mode }}
+          DB_ADAPTER: pgsql
+          DB_DRIVER: pdo_pgsql
+          DB_HOST: 127.0.0.1
+          DB_NAME: zapimoveis
+          DB_USER: root
+          DB_PASSWORD: rootpassword
+          DB_PORT: 5432
         run: |
           vendor/bin/phinx migrate
           vendor/bin/phpunit --testsuite unit

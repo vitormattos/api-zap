@@ -11,6 +11,17 @@ jobs:
         xdebug_mode: ['debug']
     name: php${{ matrix.php-versions }}
 
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432/tcp
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: rootpassword
+          POSTGRES_DB: zapimoveis
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@master
@@ -30,5 +41,14 @@ jobs:
       - name: Run tests doc
         env:
           XDEBUG_MODE: ${{ matrix.xdebug_mode }}
+          DB_ADAPTER: pgsql
+          DB_DRIVER: pdo_pgsql
+          DB_HOST: 127.0.0.1
+          DB_NAME: zapimoveis
+          DB_USER: root
+          DB_PASSWORD: rootpassword
+          DB_PORT: 5432
           API_PORT: 8080
-        run: vendor/bin/phpunit --testsuite doc
+        run: |
+          vendor/bin/phinx migrate
+          vendor/bin/phpunit --testsuite doc
