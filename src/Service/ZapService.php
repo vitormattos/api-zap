@@ -5,6 +5,7 @@ namespace Api\Service;
 use Api\Mapper\ZapMapper;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
+use userAgent;
 
 class ZapService
 {
@@ -22,7 +23,7 @@ class ZapService
     {
         $this->zapMapper = new ZapMapper();
         // To prevent 429 Too Many Requests]
-        $this->options['headers']['User-Agent'] = date('Y-m-d H:i:s');
+        $this->options['headers']['User-Agent'] = (new userAgent)->generate();
     }
 
     public function getZap(array $query, int $page = 1, int $from = 0, bool $syncronous = true): void

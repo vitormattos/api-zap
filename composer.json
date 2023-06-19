@@ -3,7 +3,8 @@
         "slim/slim": "^4.10",
         "slim/psr7": "^1.5",
         "robmorgan/phinx": "^0.12.10",
-        "doctrine/dbal": "^3.3"
+        "doctrine/dbal": "^3.3",
+        "chrisspaghetti/useragentgenerator": "dev-master"
     },
     "autoload": {
         "psr-4": {
