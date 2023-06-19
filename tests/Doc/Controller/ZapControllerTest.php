@@ -12,7 +12,13 @@ final class ZapControllerTest extends ApiTestCase
         $request = new ApiRequester();
         $request
             ->withMethod('GET')
-            ->withPath('/zap-search');
+            ->withPath('/zap-search')
+            ->withQuery([
+                'viewport' => '-43.27229506098763,-22.897444415987277|-43.2885170611097,-22.90769809054536',
+                'usageTypes' => 'RESIDENTIAL',
+                'business' => 'RENTAL',
+                'levels' => 'LANDING,UNIT_TYPE',
+            ]);
         $this->assertRequest($request);
     }
 }

@@ -9,7 +9,7 @@ services:
     environment:
       - XDEBUG_CONFIG
       - DB_ADAPTER
-      - DP_DRIVER
+      - DB_DRIVER
       - DB_HOST
       - DB_PORT
       - DB_NAME

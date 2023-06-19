@@ -23,6 +23,8 @@ final class Address extends AbstractMigration
             ->addColumn('complement', 'string', ['null' => true])
             ->addColumn('precision', 'string', ['null' => true])
             ->addColumn('zip_code', 'string', ['null' => true])
+            ->addColumn('lat', 'string', ['null' => true])
+            ->addColumn('lon', 'string', ['null' => true])
             ->addForeignKey('zap_id', 'unit', 'zap_id', ['delete'=> 'CASCADE', 'update'=> 'CASCADE'])
             ->create();
     }

@@ -7,6 +7,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Types\Types;
 
 class ZapMapper
 {
@@ -19,11 +20,12 @@ class ZapMapper
             'user' => getenv('DB_USER'),
             'password' => getenv('DB_PASSWORD'),
             'host' => getenv('DB_HOST'),
-            'driver' => getenv('DP_DRIVER')
+            'driver' => getenv('DB_DRIVER')
         ]);
     }
 
-    public function saveData(array $data): void {
+    public function saveData(array $data): void
+    {
         foreach ($data as $row) {
             $this->insertItem($row['listing']);
         }
@@ -34,6 +36,15 @@ class ZapMapper
         return new QueryBuilder($this->conn);
     }
 
+    private function stringToDateImmutable(string $date): \DateTimeImmutable
+    {
+        $date = preg_replace('/\.\d+Z$/', '', $date);
+        $date = preg_replace('/Z$/', '', $date);
+
+        $return = \DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s', $date);
+        return $return;
+    }
+
     private function insertItem(array $row): void
     {
         $qb = $this->getQueryBuilder();
@@ -41,7 +52,17 @@ class ZapMapper
             'data' => $qb->createNamedParameter(json_encode($row)),
             'zap_id' => $qb->createNamedParameter($row['id']),
             'title' => $qb->createNamedParameter($row['title']),
+            'created_at' => $qb->createNamedParameter(
+                $this->stringToDateImmutable($row['createdAt']),
+                Types::DATE_IMMUTABLE
+            ),
         ];
+        if (!empty($row['updatedAt'])) {
+            $data['updated_at'] = $qb->createNamedParameter(
+                $this->stringToDateImmutable($row['updatedAt']),
+                Types::DATE_IMMUTABLE
+            );
+        }
         if (array_key_exists(0, $row['bedrooms'])) {
             $data['bedrooms'] = $qb->createNamedParameter($row['bedrooms'][0], ParameterType::INTEGER);
         }
@@ -94,15 +115,19 @@ class ZapMapper
             'state_acronym' => 'stateAcronym',
             'complement' => 'complement',
             'precision' => 'precision',
-            'zip_code' => 'zipCde',
+            'zip_code' => 'zipCode',
         ];
         $data = [
             'zap_id' => $qb->createNamedParameter($zapId)
         ];
-        foreach($fields as $col => $original) {
+        foreach ($fields as $col => $original) {
             if (array_key_exists($original, $address) && !empty($address[$original])) {
                 $data[$col] = $qb->createNamedParameter($address[$original]);
             }
+        }
+        if (!empty($address['point']) && !empty($address['point']['lat'] && !empty($address['point']['lon']))) {
+            $data['lat'] = $address['point']['lat'];
+            $data['lon'] = $address['point']['lon'];
         }
         $qb->insert('address')
             ->values($data)
@@ -119,7 +144,10 @@ class ZapMapper
                 'business_type' => $qb->createNamedParameter($price['businessType']),
             ];
             if (array_key_exists('monthlyCondoFee', $price)) {
-                $data['monthly_condo_fee'] = $qb->createNamedParameter($price['monthlyCondoFee'], ParameterType::INTEGER);
+                $data['monthly_condo_fee'] = $qb->createNamedParameter(
+                    $price['monthlyCondoFee'],
+                    ParameterType::INTEGER
+                );
             }
             if (array_key_exists('yearlyIptu', $price)) {
                 $data['yearly_iptu'] = $qb->createNamedParameter($price['yearlyIptu'], ParameterType::INTEGER);
@@ -130,7 +158,10 @@ class ZapMapper
                 }
                 $data['warranties'] = $qb->createNamedParameter(json_encode($price['rentalInfo']['warranties']));
                 if (array_key_exists('monthlyRentalTotalPrice', $price['rentalInfo'])) {
-                    $data['monthly_rental_total_price'] = $qb->createNamedParameter($price['rentalInfo']['monthlyRentalTotalPrice'], ParameterType::INTEGER);
+                    $data['monthly_rental_total_price'] = $qb->createNamedParameter(
+                        $price['rentalInfo']['monthlyRentalTotalPrice'],
+                        ParameterType::INTEGER
+                    );
                 }
             }
             $qb->insert('prices')

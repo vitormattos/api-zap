@@ -27,24 +27,36 @@ select u.zap_id,
        u.bedrooms,
        u.bathrooms,
        u.total_areas,
-       ut."type",
+       ut.type,
        p.price,
        p.yearly_iptu,
-       p.monthly_condo_fee,
+       p.monthly_condo_fee as condominio,
        p.monthly_rental_total_price as total,
-       a.street,
+       a.street as address,
        a.neighborhood,
-       concat('https://www.zapimoveis.com.br/imovel/', u.zap_id) as url
+       a.city,
+       u.created_at,
+       u.updated_at,
+       concat('https://www.zapimoveis.com.br/imovel/', u.zap_id) as url,
+       concat(a.lat, ' ', a.lon) as latlong,
+       data ->> 'whatsappNumber' as whatsapp,
+       u.data
   from unit u
   join prices p on p.zap_id = u.zap_id
   join unit_type ut on ut.zap_id = u.zap_id
   join address a on a.zap_id = u.zap_id
  where business_type in ('RENTAL')
-   and u.zap_id not in ('2559137018')
+   and u.zap_id not in ('2615584494')
+   -- Comerciais
    and ut.type not in ('OFFICE', 'COMMERCIAL_BUILDING', 'COMMERCIAL_PROPERTY', 'BUSINESS', 'PARKING_SPACE', 'SHED_DEPOSIT_WAREHOUSE')
+   -- Localização ruim
    and a.street not in ('Rua dos Bobos')
-   and (u.bedrooms >= 2 or u.bedrooms is null)
-   and (u.total_areas >= 80 or u.total_areas is null)
---   and a.neighborhood in ('')
- order by p.monthly_rental_total_price
+   and (u.bedrooms >= 3 or u.bedrooms is null)
+   and u.data ->> 'description' not like '%mobilhado%'
+   and p.monthly_rental_total_price <= 2700
+   and (u.created_at >= '2023-06-18' or u.updated_at >= '2023-06-18')
+--   and (u.total_areas >= 80 or u.total_areas is null)
+   and a.neighborhood in ('Bairro Legal')
+   and a.city = 'Rio de Janeiro'
+   order by total
 ```
