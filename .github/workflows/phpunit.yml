@@ -29,7 +29,9 @@ jobs:
       - name: Run phpunit
         env:
           XDEBUG_MODE: ${{ matrix.xdebug_mode }}
-        run: vendor/bin/phpunit --testsuite unit
+        run: |
+          vendor/bin/phinx migrate
+          vendor/bin/phpunit --testsuite unit
 
       - name: Upload coverage results to Coveralls
         if: matrix.xdebug_mode == 'coverage'
