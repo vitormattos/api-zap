@@ -13,6 +13,17 @@ jobs:
         server-versions: ['master']
     name: php${{ matrix.php-versions }}
 
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432/tcp
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: rootpassword
+          POSTGRES_DB: zapimoveis
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@master
