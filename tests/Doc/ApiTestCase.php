@@ -17,15 +17,5 @@ class ApiTestCase extends ApiToolsApiTestCase {
         }
         $schema = OpenApiSchema::getInstance($data);
         $this->setSchema($schema);
-
-        $this->cleanDatabase();
-    }
-
-    private function cleanDatabase(): void
-    {
-        $databasePath = 'storage/database.json';
-        if (file_exists($databasePath) && is_writable($databasePath)) {
-            unlink($databasePath);
-        }
     }
 }

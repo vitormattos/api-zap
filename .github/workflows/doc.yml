@@ -36,9 +36,6 @@ jobs:
       - name: Install dependencies
         run: composer i
 
-      - name: Run builtin server
-        run: php -S localhost:8080 -t public > /dev/null 2>&1 &
-
       - name: Run tests doc
         env:
           XDEBUG_MODE: ${{ matrix.xdebug_mode }}
@@ -51,5 +48,6 @@ jobs:
           DB_PORT: 5432
           API_PORT: 8080
         run: |
+          php -S localhost:8080 -t public > /dev/null 2>&1 &
           vendor/bin/phinx migrate
           vendor/bin/phpunit --testsuite doc
