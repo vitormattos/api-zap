@@ -7,7 +7,7 @@ Simple REST API to colect ZapImoveis data
 cp .env.example .env
 docker compose up -d
 docker compose exec api composer install
-docker compose exec api vendor/bin/phinx migrage
+docker compose exec api vendor/bin/phinx migrate
 ```
 
 ## Endpoints
