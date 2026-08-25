@@ -1,5 +1,4 @@
 #!/bin/bash
-. `pwd`/../.env
 
 if [ ! -d ".git" ]; then
     composer install

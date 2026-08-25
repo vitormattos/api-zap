@@ -7,14 +7,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['7.4', '8.0']
+        php-versions: ['8.1']
         coverage: ['xdebug']
-        xdebug_mode: ['debug']
+        xdebug_mode: ['coverage']
         server-versions: ['master']
-        include:
-          - php-versions: '8.1'
-            xdebug_mode: coverage
     name: php${{ matrix.php-versions }}
+
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432/tcp
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: rootpassword
+          POSTGRES_DB: zapimoveis
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
 
     steps:
       - name: Checkout
@@ -25,6 +33,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           coverage: ${{ matrix.coverage }}
+          extensions: pdo_pgsql
 
       - name: Install dependencies
         run: composer i
@@ -32,7 +41,16 @@ jobs:
       - name: Run phpunit
         env:
           XDEBUG_MODE: ${{ matrix.xdebug_mode }}
-        run: vendor/bin/phpunit --testsuite unit
+          DB_ADAPTER: pgsql
+          DB_DRIVER: pdo_pgsql
+          DB_HOST: 127.0.0.1
+          DB_NAME: zapimoveis
+          DB_USER: root
+          DB_PASSWORD: rootpassword
+          DB_PORT: 5432
+        run: |
+          vendor/bin/phinx migrate
+          vendor/bin/phpunit --testsuite unit
 
       - name: Upload coverage results to Coveralls
         if: matrix.xdebug_mode == 'coverage'

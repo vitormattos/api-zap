@@ -1,22 +1,20 @@
-FROM php:8.1-fpm
+FROM php:8.3-fpm
 ARG host_uid=1000
 ARG host_gid=1000
 
 RUN apt-get update
-
 RUN apt-get install -y \
-        procps \
-        unzip
+    procps
 
-RUN docker-php-ext-install sockets
-
-# PostgreSQL
-RUN apt install -y libpq-dev
-RUN docker-php-ext-install pdo_pgsql
-
-# Install xdebug
-RUN pecl install xdebug-3.1.4 \
-    && docker-php-ext-enable xdebug
+# Install PHP extensions
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN chmod uga+x /usr/local/bin/install-php-extensions && sync \
+    && install-php-extensions \
+    @composer \
+    pgsql \
+    pdo_pgsql \
+    sockets \
+    xdebug
 
 RUN usermod --non-unique --uid ${host_uid} www-data \
   && groupmod --non-unique --gid ${host_gid} www-data

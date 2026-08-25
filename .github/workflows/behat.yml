@@ -1,14 +1,15 @@
-name: Swagger
+name: Behat
 on: pull_request
 
 jobs:
-  doc:
+  api:
     runs-on: ubuntu-latest
+
     strategy:
       fail-fast: false
       matrix:
         php-versions: ['8.1']
-        xdebug_mode: ['debug']
+
     name: php${{ matrix.php-versions }}
 
     services:
@@ -23,22 +24,21 @@ jobs:
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
 
     steps:
-      - name: Checkout
+      - name: Checkout app
         uses: actions/checkout@master
 
-      - name: Set up php
+      - name: Set up php ${{ matrix.php-versions }}
         uses: shivammathur/setup-php@master
         with:
           php-version: ${{ matrix.php-versions }}
-          coverage: ${{ matrix.coverage }}
           extensions: pdo_pgsql
 
-      - name: Install dependencies
-        run: composer i
+      - name: Set up dependencies
+        run: composer install
 
-      - name: Run tests doc
+      - name: Run behat
         env:
-          XDEBUG_MODE: ${{ matrix.xdebug_mode }}
+          BEHAT_ROOT_DIR: public
           DB_ADAPTER: pgsql
           DB_DRIVER: pdo_pgsql
           DB_HOST: 127.0.0.1
@@ -46,8 +46,7 @@ jobs:
           DB_USER: root
           DB_PASSWORD: rootpassword
           DB_PORT: 5432
-          API_PORT: 8080
         run: |
-          php -S localhost:$API_PORT -t public > /dev/null 2>&1 &
           vendor/bin/phinx migrate
-          vendor/bin/phpunit --testsuite doc
+          export BEHAT_VERBOSE="$RUNNER_DEBUG"
+          vendor/bin/behat features/zap.feature:3

@@ -3,7 +3,8 @@
         "slim/slim": "^4.10",
         "slim/psr7": "^1.5",
         "robmorgan/phinx": "^0.12.10",
-        "doctrine/dbal": "^3.3"
+        "doctrine/dbal": "^3.3",
+        "chrisspaghetti/useragentgenerator": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -17,7 +18,7 @@
         "phpstan/phpstan": "^1.6",
         "phpunit/phpunit": "^9.5",
         "behat/behat": "^3.10",
-        "libresign/behat-builtin-extension": "^0.4.1",
+        "libresign/behat-builtin-extension": "^0.5.2",
         "guzzlehttp/guzzle": "^7.4",
         "byjg/swagger-test": "^3.1"
     },

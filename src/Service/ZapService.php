@@ -4,40 +4,47 @@ namespace Api\Service;
 
 use Api\Mapper\ZapMapper;
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
+use userAgent;
 
 class ZapService
 {
-    private int $pageSize = 30;
+    private int $pageSize = 100;
     private ZapMapper $zapMapper;
+    private array $options = [
+        'headers' => [
+            'X-Domain' => 'www.zapimoveis.com.br',
+        ],
+        'stream' => true,
+        'version' => '1.0',
+    ];
 
     public function __construct()
     {
         $this->zapMapper = new ZapMapper();
+        // To prevent 429 Too Many Requests]
+        $this->options['headers']['User-Agent'] = (new userAgent())->generate();
     }
 
-    public function getZap(array $query, int $page = 1, int $from = 0): void
+    public function getZap(array $query, int $page = 1, int $from = 0, bool $syncronous = true): void
+    {
+        if ($syncronous) {
+            $this->getSync($query, $page, $from);
+        } else {
+            $this->getAssync($query, $page, $from);
+        }
+    }
+
+    private function getUrl(array $query, $from, $page): string
     {
         $query = array_merge(
             [
-                'business' => 'RENTAL',
-                'listingType' => 'USED',
-                'portal' => 'ZAP',
-                'bedrooms' => null,
-                'sort' => 'pricingInfos.price ASC sortFilter:pricingInfos.businessType=\'RENTAL\'',
-                'usableAreasMin' => 70,
-                'priceMax' => 5000,
                 'categoryPage' => 'RESULT',
-                'addressCountry' => '',
-                'addressState' => 'Rio de Janeiro',
-                'addressCity' => 'Rio de Janeiro',
-                'addressZone' => 'Zona Central',
-                'addressNeighborhood' => 'Centro',
-                'addressStreet' => '',
-                'addressAccounts' => '',
-                'addressType' => 'neighborhood',
-                'levels' => 'NEIGHBORHOOD',
-                'size' => $this->pageSize,
                 'includeFields' => $this->getIncludeFields(),
+                'size' => $this->pageSize,
+                'sort' => 'pricingInfos.price ASC',
+                'superPremiumSize' => 0,
+                'usageTypes' => 'RESIDENTIAL',
             ],
             $query,
             [
@@ -45,25 +52,41 @@ class ZapService
                 'page' => $page,
             ]
         );
+        $url = 'https://glue-api.zapimoveis.com.br/v2/listings?' . urldecode(http_build_query($query));
+        return $url;
+    }
 
-        $options = [
-            'headers' => [
-                'X-Domain' => 'www.zapimoveis.com.br',
-            ],
-            'stream' => true,
-            'version' => '1.0',
-        ];
-
+    private function getSync(array $query, int $page, int $from): void
+    {
         $client = new Client();
-        $response = $client->get('https://glue-api.zapimoveis.com.br/v2/listings?' . http_build_query($query), $options);
+        $url = $this->getUrl($query, $from, $page);
+        $response = $client->get($url, $this->options);
+        $this->processResponse($response, $query, $page, $from);
+    }
+
+    private function getAssync(array $query, int $page, int $from): void
+    {
+        $client = new Client();
+        $url = $this->getUrl($query, $from, $page);
+        $promisse = $client->getAsync($url, $this->options);
+        $promisse->then(
+            function (ResponseInterface $response) use ($query, $page, $from) {
+                $this->processResponse($response, $query, $page, $from);
+            }
+        );
+    }
+
+    private function processResponse(ResponseInterface $response, array $query, int $page, int $from): void
+    {
         $content = $response->getBody()->getContents();
         $decoded = json_decode($content, true);
-        $this->zapMapper->saveData($decoded['search']['result']['listings']);
-        if ($page * $query['page'] < $decoded['search']['totalCount']) {
+        $total = $decoded['search']['totalCount'];
+        if ($page * $query['page'] < $total) {
             $page++;
             $from += $this->pageSize;
-            $this->getZap($query, $page, $from);
+            $this->getZap($query, $page, $from, false);
         }
+        $this->zapMapper->saveData($decoded['search']['result']['listings']);
     }
 
     private function getIncludeFields(): string
@@ -84,14 +107,15 @@ class ZapService
                             'buildings',
                             'capacityLimit',
                             'constructionStatus',
+                            'contractType',
                             'createdAt',
                             'description',
                             'displayAddressType',
                             'externalId',
                             'floors',
                             'legacyId',
-                            'listingType',
                             'listingsCount',
+                            'listingType',
                             'nonActivationReason',
                             'parkingSpaces',
                             'portal',
@@ -109,9 +133,9 @@ class ZapService
                             'title',
                             'totalAreas',
                             'unitFloor',
+                            'unitsOnTheFloor',
                             'unitSubTypes',
                             'unitTypes',
-                            'unitsOnTheFloor',
                             'updatedAt',
                             'usableAreas',
                             'usageTypes',
@@ -125,13 +149,18 @@ class ZapService
                             'showAddress',
                             'legacyVivarealId',
                             'legacyZapId',
-                            'minisite'
+                            'createdDate',
+                            'minisite',
+                            'tier'
                         ],
                         'medias',
+                        'accountLink',
+                        'link'
                     ],
                 ],
                 'totalCount'
             ],
+            'page',
         ];
         $string = array_reduce([$array], [$this, 'reduce',]);
         return $string;
